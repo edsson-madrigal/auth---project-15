@@ -21,40 +21,51 @@ const AuthForm = () => {
 
     // optional: Add validation
 
+    // get the web API from firebase project GLOBAL SETTINGs
+    //firebase.google.com/docs/reference/rest/auth AIzaSyDLsWZSEOs_Q0xKf01bYCeDZHKsCcnFTl8
+
     setIsLoading(true);
+    let url;
     if (isLogin) {
+      url =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyDLsWZSEOs_Q0xKf01bYCeDZHKsCcnFTl8";
     } else {
-      // get the web API from firebase project GLOBAL SETTINGs
-      //firebase.google.com/docs/reference/rest/auth
-      fetch(
-        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDLsWZSEOs_Q0xKf01bYCeDZHKsCcnFTl8",
-        {
-          method: "POST",
-          body: JSON.stringify({
-            email: enteredEmail,
-            password: enteredPassword,
-            returnSecureToken: true,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      ).then((res) => {
+      url =
+        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyDLsWZSEOs_Q0xKf01bYCeDZHKsCcnFTl8";
+    }
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify({
+        email: enteredEmail,
+        password: enteredPassword,
+        returnSecureToken: true,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => {
         setIsLoading(false);
         if (res.ok) {
-          // ...
+          return res.json();
         } else {
           return res.json().then((data) => {
-            console.log(data);
             let errorMessage = "Authentication failed!";
+            console.log(data);
             // if (data && data.error && data.error.message) {
             //   errorMessage = data.error.message;
             // }
-            alert(errorMessage);
+
+            throw new Error(errorMessage);
           });
         }
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((err) => {
+        alert(err.message);
       });
-    }
   };
 
   return (
